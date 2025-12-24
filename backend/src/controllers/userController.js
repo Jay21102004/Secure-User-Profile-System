@@ -455,20 +455,15 @@ const downloadProfilePDF = async (req, res, next) => {
     // Get profile data
     const profileData = user.getProfileData();
     
-    // Create masked Aadhaar for PDF (show only last 4 digits for security)
-    const maskAadhaar = (aadhaar) => {
-      if (aadhaar && aadhaar.length >= 4) {
-        const lastFour = aadhaar.slice(-4);
-        return `XXXX XXXX ${lastFour}`;
-      }
-      return 'XXXX XXXX XXXX';
-    };
-    
-    // Replace decrypted Aadhaar with masked version for PDF
-    profileData.maskedAadhaar = maskAadhaar(profileData.aadhaarNumber);
-    delete profileData.aadhaarNumber; // Remove the decrypted version
+    // Keep full Aadhaar number for PDF (decrypted version)
+    // Format Aadhaar number with spaces for better readability
+    if (profileData.aadhaarNumber) {
+      profileData.formattedAadhaar = profileData.aadhaarNumber.replace(/(\d{4})(\d{4})(\d{4})/, '$1 $2 $3');
+    } else {
+      profileData.formattedAadhaar = 'Not available';
+    }
 
-    // Generate PDF with masked data
+    // Generate PDF with full decrypted data
     const { generateEncryptedProfilePDF } = require('../utils/pdfGenerator');
     const pdfBuffer = await generateEncryptedProfilePDF(profileData, password);
 
