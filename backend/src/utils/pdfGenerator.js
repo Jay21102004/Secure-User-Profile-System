@@ -191,10 +191,10 @@ const generateEncryptedProfilePDF = async (user, password) => {
       doc.fontSize(12)
          .font('Helvetica');
 
-      // Show masked Aadhaar number for security
+      // Show full decrypted Aadhaar number
       doc.text('Aadhaar Number:', 50)
          .font('Helvetica-Bold')
-         .text(user.maskedAadhaar || 'Not available', 150, doc.y - 12);
+         .text(user.formattedAadhaar || 'Not available', 150, doc.y - 12);
 
       // Security footer
       doc.moveDown(2);
